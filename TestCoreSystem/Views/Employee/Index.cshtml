@@ -1,0 +1,324 @@
+﻿@model IEnumerable<TestCoreSystem.Models.Book>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="AddEmployee">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Author)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author)
+            </td>
+            <td>
+                    @Html.ActionLink("Edit", "UpdateEmployee", new {  id=item.Id  }) |
+                    @Html.ActionLink("Details", "GetEmployeeById", new {  id=item.Id  }) |
+                    @Html.ActionLink("Delete", "DeleteEmployee", new {  id=item.Id  })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+
+
+
+
+@*@inject IHttpContextAccessor HttpContextAccessor
+@model List<testCore.Models.Employee>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="text-center">
+    <h2 class=" mt-4 mb-4">Employee Details</h2>
+</div>
+
+@if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext?.Session.Get("Token")?.ToString()))
+{
+    if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Admin")
+    {
+        <buton class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal3">Add</buton>
+    }
+}
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <th>
+            Name
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            Department
+        </th>
+        <th>Action</th>
+    </tr>
+    @if (Model == null)
+    {
+        <tr>No Employee Found</tr>
+    }
+    else
+    {
+
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th> @item.Id</th>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Email
+                </td>
+                <td>@item.Department</td>
+                <td>
+
+                    @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext?.Session.Get("Token")?.ToString()))
+                    {
+                        if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Admin")
+                        {
+                            <a class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal4" onclick="UpdateEmp(@item.Id)">Update</a>
+                            <a class="btn btn-sm btn-danger" onclick="DeleteEmp(@item.Id)">Delete</a>
+                            <a class="btn btn-sm btn-success" asp-area="" asp-controller="Employee" asp-route-Id="@item.Id" asp-action="GetFeedbacks">Show Feedbacks</a>
+                        }
+                        else
+                        {
+                            <button onclick="PostFeedback(@item.Id)" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2"> Give Feedbacks</button>
+
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    }
+
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="feedback" class="col-form-label">Feedback:</label>
+                    <input type="text" class="form-control" id="feedback">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="SaveFeedback">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Employee Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="name" class="col-form-label">Name:</label>
+                    <input type="text" class="form-control" id="name">
+
+                    <label for="email" class="col-form-label">Email:</label>
+                    <input type="email" class="form-control" id="email">
+
+                    <label for="phoneno" class="col-form-label">Department :</label>
+                    <input type="text" class="form-control" id="department">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="AddEmp">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="name" class="col-form-label">Name:</label>
+                    <input type="text" class="form-control" id="editName">
+
+                    <label for="email" class="col-form-label">Email:</label>
+                    <input type="email" class="form-control" id="editEmail">
+
+                    <label for="phoneno" class="col-form-label">Dpartment.:</label>
+                    <input type="text" class="form-control" id="editDepartment">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="EditEmp">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            console.log("init....");
+        });
+        function DeleteEmp(Id) {
+            console.log('delete', Id);
+            var data = new Object();
+            data.id = Id;
+            $.ajax({
+                type: 'GET',
+                url: '/Employee/DeletData',
+                data: data,
+                contentType: "application/json",
+                success: function (result) {
+                    $('.modal').modal('hide');
+                    $('.modal-backdrop').remove();
+                    location.reload();
+
+                },
+                error: function (err) {
+                    console.log("error: ", err.Message);
+                }
+            })
+        }
+
+        function UpdateEmp(id) {
+            var data = new Object();
+            data.id = id;
+            debugger;
+            $.ajax({
+                type: 'GET',
+                url: '/Employee/GetEmployeeById',
+                data: data,
+                success: function (result) {
+                    console.log('success', result);
+                    $('#editName').val(result.name);
+                    $('#editDepartment').val(result.department);
+                    $('#editEmail').val(result.email);
+                    $('#exampleModal4').modal('show');
+
+                },
+                error: function () {
+
+                }
+            });
+
+            $('#EditEmp').click(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Employee/UpdateEmployee',
+                    data: { "Name": $('#editName').val(), "Email": $('#editEmail').val(), "Department": $('#editDepartment').val(), "id": id },
+                    success: function (result) {
+                        $('.modal').modal('hide');
+                        $('.modal-backdrop').remove();
+                        console.log('success');
+                        location.reload();
+                    },
+                    error: function () {
+
+                    }
+                })
+            })
+
+        }
+
+
+
+
+        function PostFeedback(Id) {
+            console.log(Id);
+
+            $("#SaveFeedback").click(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Employee/AddFeedback',
+                    data: { "EmployeeId": Id, "FeedBackDescription": document.getElementById("feedback").value, "FeedBackBy": "Manager" },
+                    success: function (result) {
+                        $('.modal').modal('hide');
+                        $('.modal-backdrop').remove();
+                        console.log('success');
+                    },
+                    error: function () {
+
+                    }
+                })
+            });
+
+        }
+
+        $('#AddEmp').click(function () {
+            console.log('addd/.')
+            $.ajax({
+                type: 'POST',
+                url: '/Employee/AddEmployee',
+                data: { "Name": $('#name').val(), "Email": $('#email').val(), "Department": $('#department').val() },
+                success: function (result) {
+                    $('.modal').modal('hide');
+                    $('.modal-backdrop').remove();
+                    console.log('success');
+                    location.reload();
+                },
+                error: function () {
+
+                }
+            })
+        })
+
+    </script>
+
+}*@
